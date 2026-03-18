@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Framework.Engine;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GookieRun.Gookie
+
+class GameManager : GameApp
 {
-    internal class GameManager
-    {
-    }
+
 }

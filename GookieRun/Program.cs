@@ -1,1 +1,4 @@
-﻿Console.WriteLine("Hello, World!");
+﻿class Program
+{
+    
+}
