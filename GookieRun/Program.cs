@@ -1,4 +1,1 @@
-﻿class Program
-{
-    
-}
+﻿new GameManager().Run();

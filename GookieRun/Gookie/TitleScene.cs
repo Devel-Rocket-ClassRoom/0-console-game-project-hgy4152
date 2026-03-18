@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
-class TitleScene
+using Framework.Engine;
+class TitleScene : Scene
 {
     // 각 알파벳의 5x5 비트맵 데이터를 정의합니다.
     static Dictionary<char, int[,]> Alphabet = new Dictionary<char, int[,]>
@@ -18,7 +18,13 @@ class TitleScene
         [' '] = new int[,] { { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 } }
     };
 
-    static void Main()
+
+    public override void Update(float deltaTime)
+    {
+
+    }
+
+    public override void Draw(ScreenBuffer buffer)
     {
         string input = "Gookie Run"; // 출력할 대상
         int height = 5; // 폰트 높이 (5줄)
@@ -51,4 +57,15 @@ class TitleScene
         Console.WriteLine("출력이 완료되었습니다. (Press any key)");
         Console.ReadKey();
     }
+
+    public override void Load()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Unload()
+    {
+        throw new NotImplementedException();
+    }
+
 }
