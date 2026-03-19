@@ -1,10 +1,35 @@
-﻿using System;
+﻿using Framework.Engine;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GookieRun.Gookie
+class PlayScene : Scene
 {
-    internal class PlayScene
+    public event GameAction PlayAgainRequested;
+
+    private Obstarcle obstarcle;
+    public override void Update(float deltaTime)
     {
+        UpdateGameObjects(deltaTime);
+
     }
+    public override void Draw(ScreenBuffer buffer)
+    {
+        DrawGameObjects(buffer);
+
+    }
+
+    public override void Load()
+    {
+        obstarcle = new Obstarcle(this);
+        AddGameObject(obstarcle);
+    }
+
+    public override void Unload()
+    {
+        ClearGameObjects();
+
+    }
+
+
 }

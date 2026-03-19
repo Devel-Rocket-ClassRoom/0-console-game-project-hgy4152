@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Framework.Engine;
-class TitleScene : Scene
+public class TitleScene : Scene
 {
+    public event GameAction StartRequested;
     // 각 알파벳의 5x5 비트맵 데이터를 정의합니다.
     static Dictionary<char, int[,]> Alphabet = new Dictionary<char, int[,]>
     {
@@ -21,7 +22,10 @@ class TitleScene : Scene
 
     public override void Update(float deltaTime)
     {
-
+        if (Input.IsKeyDown(ConsoleKey.Enter))
+        {
+            StartRequested?.Invoke(); // 다음 씬으로 넘어가기 구현
+        }
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -29,43 +33,52 @@ class TitleScene : Scene
         string input = "Gookie Run"; // 출력할 대상
         int height = 5; // 폰트 높이 (5줄)
 
-        Console.Title = "Gookie Run Generator";
+        Console.Title = "Gookie Run";
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("=== [ 2D Array Font System ] ===\n");
+        buffer.DrawBox(14, 1, 75, 10, ConsoleColor.White);
 
-        // 핵심 로직: 모든 글자의 '첫 번째 줄'을 먼저 다 찍고, 그 다음 '두 번째 줄'을 찍는 방식
-        for (int row = 0; row < height; row++)
+        int startX = 17; // 시작 X 좌표
+        int startY = 3; // 시작 Y 좌표
+
+        foreach (char c in input)
         {
-            foreach (char c in input)
+            if (Alphabet.ContainsKey(c))
             {
-                if (Alphabet.ContainsKey(c))
+                int[,] glyph = Alphabet[c];
+
+                for (int row = 0; row < height; row++)
                 {
-                    int[,] glyph = Alphabet[c];
                     for (int col = 0; col < 5; col++)
                     {
-                        // 1이면 '*' 출력, 0이면 공백(' ') 출력
-                        Console.Write(glyph[row, col] == 1 ? "*" : " ");
+                        if (glyph[row, col] == 1)
+                        {
+                     
+                            buffer.SetCell(startX + col, startY + row, '*', ConsoleColor.Yellow);
+                        }
                     }
-                    Console.Write("  "); // 글자 사이의 자간
                 }
+                startX += 7; // 자간 포함 다음 글자 위치 (5칸 + 자간 2칸)
             }
-            Console.WriteLine(); // 한 줄(Row) 출력이 끝나면 개행
         }
 
         Console.ResetColor();
-        Console.WriteLine("\n================================");
-        Console.WriteLine("출력이 완료되었습니다. (Press any key)");
-        Console.ReadKey();
+
+        buffer.WriteTextCentered(12, "Press Any Key to Start");
+
     }
+
+
+
+
 
     public override void Load()
     {
-        throw new NotImplementedException();
+
     }
 
     public override void Unload()
     {
-        throw new NotImplementedException();
+
     }
 
 }
