@@ -9,7 +9,6 @@ class Obstarcle : GameObject
 
     private float _moveTimer;
     private float _obsTimer;
-    private float Gap;
     private readonly LinkedList<int> _field = new LinkedList<int>();
 
     private LinkedList<(int, int, int)> _obs = new LinkedList<(int, int, int)>();
@@ -27,7 +26,7 @@ class Obstarcle : GameObject
         // 시작지점 설정
         _field.AddFirst(15);
 
-        _obs.AddFirst((8, 2, 3));
+        _obs.AddFirst((0, 0, 0));
 
         obsX = Enumerable.Range(1, 100).Where(x => x % 2 == 0).ToList();
 
@@ -43,19 +42,22 @@ class Obstarcle : GameObject
 
         var createObs = _obs.First;
 
+        var lastNode = 0;
 
         while (node != null)
         {
-            buffer.DrawHLine(100 + node.Value, 2, block, '=');
 
-            buffer.FillRect(100 + node.Value,
-                                createObs.Value.Item1,
-                                createObs.Value.Item2,
-                                createObs.Value.Item3, '*');
+            // node.value가 -될 때 부터 출력되니까 절댓값
+            // 이전 노드랑 현재 노드랑 일정 거리이상 차이 나면 출력
+            if(Math.Abs(node.Value - lastNode) >= 15)
+            {
+                buffer.FillRect(100 + node.Value,
+                    createObs.Value.Item1,
+                    createObs.Value.Item2,
+                    createObs.Value.Item3, '*');
 
-
-
-            buffer.DrawHLine(100 + node.Value, 11, block, '=');
+                lastNode = node.Value;
+            }
 
             node = node.Next;
             createObs = createObs?.Next;
@@ -71,43 +73,19 @@ class Obstarcle : GameObject
     {
         _moveTimer += deltaTime;
         _obsTimer += deltaTime;
-        Gap += deltaTime;
+
         // 자동 이동
         if (_moveTimer > k_MoveInterval)
         {
             Move();
-            
+            CreateObstarcle();
+
             _moveTimer = 0f;
-        }
-
-        // 장애물 추가 : 이동 2회당 1 장애물
-        if (_obsTimer > k_MoveInterval)
-        {
-            int pickNum = rnd.Next(1, 4);
-
-            switch (pickNum)
-            {
-                case 1:
-                    // 천장 장애물
-                    _obs.AddLast((2, 2, 6));
-                    break;
-
-                case 2:
-                    // 바닥 장애물 - 1단 점프
-                    _obs.AddLast((8, 2, 3));
-                    break;
-
-                case 3:
-                    // 2단 점프
-                    _obs.AddLast((5, 2, 5));
-                    break;
-                default:
-                    break;
-
-            }
-            
             _obsTimer = 0f;
         }
+
+  
+
         
     }
 
@@ -117,6 +95,36 @@ class Obstarcle : GameObject
         
         _field.AddFirst(newObs);
 
+    }
+
+    private void CreateObstarcle()
+    {
+        if (_obsTimer > k_MoveInterval)
+        {
+            int pickNum = rnd.Next(1, 4);
+
+            switch (pickNum)
+            {
+                case 1:
+                    // 천장 장애물
+                    _obs.AddLast((2, 2, 7));
+                    break;
+
+                case 2:
+                    // 바닥 장애물 - 1단 점프
+                    _obs.AddLast((8, 2, 4));
+                    break;
+
+                case 3:
+                    // 2단 점프
+                    _obs.AddLast((6, 2, 6));
+                    break;
+                default:
+                    break;
+
+            }
+
+        }
     }
 
 }
