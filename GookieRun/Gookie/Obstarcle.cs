@@ -8,14 +8,11 @@ class Obstarcle : GameObject
     private const float k_MoveInterval = 0.10f; // 자동으로 움직이는 시간
 
     private float _moveTimer;
-    private float _obsTimer;
     private readonly LinkedList<int> _field = new LinkedList<int>();
 
     private LinkedList<(int, int, int)> _obs = new LinkedList<(int, int, int)>();
-    private int block = 4;
 
     Random rnd = new Random();
-    List<int> obsX;
 
     public int FieldPos => _field.First.Value;
 
@@ -28,7 +25,6 @@ class Obstarcle : GameObject
 
         _obs.AddFirst((0, 0, 0));
 
-        obsX = Enumerable.Range(1, 100).Where(x => x % 2 == 0).ToList();
 
     }
 
@@ -64,9 +60,6 @@ class Obstarcle : GameObject
 
         }
 
-
-
-
     }
 
     public override void Update(float deltaTime)
@@ -80,11 +73,7 @@ class Obstarcle : GameObject
             CreateObstarcle();
 
             _moveTimer = 0f;
-            _obsTimer = 0f;
         }
-
-  
-
         
     }
 
@@ -121,7 +110,7 @@ class Obstarcle : GameObject
 
         }
 
-        }
+        
     }
 
 }
