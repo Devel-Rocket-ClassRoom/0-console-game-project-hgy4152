@@ -72,7 +72,6 @@ class Obstarcle : GameObject
     public override void Update(float deltaTime)
     {
         _moveTimer += deltaTime;
-        _obsTimer += deltaTime;
 
         // 자동 이동
         if (_moveTimer > k_MoveInterval)
@@ -99,30 +98,28 @@ class Obstarcle : GameObject
 
     private void CreateObstarcle()
     {
-        if (_obsTimer > k_MoveInterval)
+        int pickNum = rnd.Next(1, 4);
+
+        switch (pickNum)
         {
-            int pickNum = rnd.Next(1, 4);
+            case 1:
+                // 천장 장애물
+                _obs.AddLast((2, 2, 7));
+                break;
 
-            switch (pickNum)
-            {
-                case 1:
-                    // 천장 장애물
-                    _obs.AddLast((2, 2, 7));
-                    break;
+            case 2:
+                // 바닥 장애물 - 1단 점프
+                _obs.AddLast((8, 2, 4));
+                break;
 
-                case 2:
-                    // 바닥 장애물 - 1단 점프
-                    _obs.AddLast((8, 2, 4));
-                    break;
+            case 3:
+                // 2단 점프
+                _obs.AddLast((6, 2, 6));
+                break;
+            default:
+                break;
 
-                case 3:
-                    // 2단 점프
-                    _obs.AddLast((6, 2, 6));
-                    break;
-                default:
-                    break;
-
-            }
+        }
 
         }
     }
