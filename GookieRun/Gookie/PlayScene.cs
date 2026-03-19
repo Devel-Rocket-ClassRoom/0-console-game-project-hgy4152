@@ -8,6 +8,7 @@ class PlayScene : Scene
     public event GameAction PlayAgainRequested;
 
     private Obstarcle obstarcle;
+    private Gookie gookie;
     public override void Update(float deltaTime)
     {
         UpdateGameObjects(deltaTime);
@@ -23,6 +24,9 @@ class PlayScene : Scene
     {
         obstarcle = new Obstarcle(this);
         AddGameObject(obstarcle);
+
+        gookie = new Gookie(this);
+        AddGameObject(gookie);
     }
 
     public override void Unload()
