@@ -3,20 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-public class Item : GameObject
+public struct Item
 {
- 
-    public Item(Scene scene) : base(scene)
-    {
-        Name = "Item";
-    }
+    public int X;
+    public int Y;
+    public int Width;
+    public int Height;
+    public string Name;
+    public char C;
+    public ConsoleColor Color;
 
-    public override void Draw(ScreenBuffer buffer)
-    {
 
-    }
-
-    public override void Update(float deltaTime)
-    {
-    }
 }
