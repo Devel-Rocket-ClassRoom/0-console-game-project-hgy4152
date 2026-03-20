@@ -9,9 +9,14 @@ class PlayScene : Scene
 
     private Obstarcle obstarcle;
     private Gookie gookie;
+    private Item item;
+
+   
+
     public override void Update(float deltaTime)
     {
         UpdateGameObjects(deltaTime);
+
 
     }
     public override void Draw(ScreenBuffer buffer)
@@ -27,6 +32,9 @@ class PlayScene : Scene
 
         gookie = new Gookie(this);
         AddGameObject(gookie);
+
+        item = new Item(this);
+        AddGameObject(item);
     }
 
     public override void Unload()

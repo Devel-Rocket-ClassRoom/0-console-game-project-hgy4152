@@ -1,10 +1,22 @@
-﻿using System;
+﻿using Framework.Engine;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GookieRun.Gookie
+public class Item : GameObject
 {
-    internal class Item
+ 
+    public Item(Scene scene) : base(scene)
+    {
+        Name = "Item";
+    }
+
+    public override void Draw(ScreenBuffer buffer)
+    {
+
+    }
+
+    public override void Update(float deltaTime)
     {
     }
 }

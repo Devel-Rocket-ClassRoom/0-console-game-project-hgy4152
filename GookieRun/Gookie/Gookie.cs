@@ -16,7 +16,7 @@ public class Gookie : GameObject
 
     private float _jumpTimer;
 
-    private int body = 3;
+    private int body = 4;
     private int height = 3;
     private int jumpCount;
 
@@ -25,7 +25,7 @@ public class Gookie : GameObject
     {
         Name = "Gookie";
 
-        startPos = 9;
+        startPos = 10;
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -82,12 +82,11 @@ public class Gookie : GameObject
 
         else if(isSlide && Input.IsKeyUp(ConsoleKey.DownArrow))
         {
-            body = 3;
             isSlide = false;
             _direction = 0;
-
-
+            body = 4;
         }
+
     }
 
 
@@ -115,7 +114,7 @@ public class Gookie : GameObject
             // 낙하 슬라이드 보정
             if (isSlide)
             {
-                _direction = 1;
+                _direction = 2;
             }
         }
         

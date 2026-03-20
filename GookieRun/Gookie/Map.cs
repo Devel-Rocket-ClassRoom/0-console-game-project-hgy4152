@@ -9,14 +9,18 @@ class Obstarcle : GameObject
 
     private float _moveTimer;
 
+    private int Top = 1;
+    private int Bottom = 14;
+    private int fieldLength = 100;
+
     // 맵 움직임을 위한 값을 리스트로
     private readonly LinkedList<int> _field = new LinkedList<int>();
 
     // 장애물 만들기 위한 요소값을 리스트로
-    private LinkedList<(int, int, int)> _obs = new LinkedList<(int, int, int)>();
+    private LinkedList<(int Y, int Width, int Height)> _obs = new LinkedList<(int, int, int)>();
 
     public int FieldPos => _field.First.Value;
-    public LinkedList<(int X, int Y, int Height)> ObsPos { get; private set;  }
+
 
     public Obstarcle(Scene scene) : base(scene)
     {
@@ -27,43 +31,56 @@ class Obstarcle : GameObject
 
         _obs.AddFirst((0, 0, 0));
 
-        ObsPos = new LinkedList<(int X, int Y, int Height)>();
 
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         // 천장 바닥
-        buffer.DrawHLine(0, 1, 100, '=');
-        buffer.DrawHLine(0, 12, 100, '=');
+        buffer.DrawHLine(0, Top, fieldLength, '=');
+        buffer.DrawHLine(0, Bottom, fieldLength, '=');
 
         var node = _field.First;
 
         var createObs = _obs.First;
 
         var lastNode = 0;
+        var itemNode = 0;
 
         while (node != null)
         {
 
             // node.value가 -될 때 부터 출력되니까 절댓값
             // 이전 노드랑 현재 노드랑 일정 거리이상 차이 나면 출력
-            if(Math.Abs(node.Value - lastNode) >= 17)
+            if(Math.Abs(node.Value - lastNode) >= 20)
             {
                 buffer.FillRect(100 + node.Value,
-                    createObs.Value.Item1,
-                    createObs.Value.Item2,
-                    createObs.Value.Item3, '*');
+                    createObs.Value.Y,
+                    createObs.Value.Width,
+                    createObs.Value.Height, '*');
 
-                // 장애물 위치 기록 x,y값 , y값 + 범위
-                // x 가 범위안에 들어올 경우 y 검사하는 형식
-                // 벽이 플레이어 위치를 감지하는 방식으로 바꿀 수 도 있음.
-                ObsPos.AddLast((100 + node.Value, createObs.Value.Item1, createObs.Value.Item3));
+                
+                
+                if(createObs.Value.Height < 8)
+                {
+                    buffer.FillRect(fieldLength + node.Value, createObs.Value.Y - 3, 2 , 2, '*', ConsoleColor.Red);
+                }
+                else
+                {
+                    buffer.FillRect(fieldLength + node.Value, 
+                        createObs.Value.Y + createObs.Value.Height + 1, 2, 2, '*', ConsoleColor.Red);
+                }
 
                 lastNode = node.Value;
                 createObs = createObs.Next;
 
-                
+            }
+            else if(Math.Abs(node.Value - itemNode) >= 5) // 일반 젤리 생성
+            {
+
+                buffer.SetCell(fieldLength + node.Value + 4, Bottom - 1, '*', ConsoleColor.Red);
+                itemNode = node.Value;
+
             }
 
             node = node.Next;
@@ -104,17 +121,17 @@ class Obstarcle : GameObject
         {
             case 1:
                 // 천장 장애물
-                _obs.AddLast((2, 2, 8));
+                _obs.AddLast((Top + 1, 2, 9));
                 break;
 
             case 2:
                 // 바닥 장애물 - 1단 점프
-                _obs.AddLast((10, 2, 2));
+                _obs.AddLast((Bottom - 2, 2, 2));
                 break;
 
             case 3:
                 // 2단 점프
-                _obs.AddLast((7, 2, 5));
+                _obs.AddLast((Bottom - 5, 2, 5));
                 break;
             default:
                 break;
