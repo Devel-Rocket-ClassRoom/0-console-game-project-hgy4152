@@ -20,6 +20,7 @@ public class Gookie : GameObject
     private int height = 3;
     private int jumpCount;
 
+    
 
     public int CurrentPosition => currPos;
     public int StartPosition => startPos;
@@ -126,5 +127,9 @@ public class Gookie : GameObject
 
     }
 
+    bool isBound(int LT, int RT, int LB, int RB)
+    {
+        return true;
+    }
 
 }
