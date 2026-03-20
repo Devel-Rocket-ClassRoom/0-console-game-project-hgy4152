@@ -19,11 +19,7 @@ class Map : GameObject
     private int node = 0;
     private int jelly = 0;
 
-    // 맵 움직임을 위한 값을 리스트로
-    private readonly LinkedList<int> _field = new LinkedList<int>();
-
-
-    public int FieldPos => _field.First.Value;
+    private bool isStart = false;
 
 
     public Map(Scene scene) : base(scene)
@@ -31,8 +27,8 @@ class Map : GameObject
         Name = "Map";
 
         // 시작지점 설정
-        _field.AddFirst(15);
         node = fieldLength;
+       
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -62,29 +58,32 @@ class Map : GameObject
 
             _moveTimer = 0f;
 
-            node++;
-            jelly++;
 
             if(node >= 20)
             {
                 CreateObstarcle();
-                CreateJelly(map.Last().Height, map.Last().Name);
-                    
-                jelly = 0;
+
+                var lastObs = map[map.Count - 1];
+                CreateJelly(lastObs.Height, lastObs.Name);
+
 
                 node = 0;
+   
             }
 
-            else if(jelly > 5)
+            
+            else if(node % 5 == 0)
             {
                 CreateJelly();
-                jelly = 0;
+  
             }
+
+
         }
 
 
 
-        
+
     }
 
     private void Move()
@@ -104,6 +103,8 @@ class Map : GameObject
                 map.RemoveAt(i);
             }
         }
+
+        node++;
 
     }
 
@@ -155,11 +156,11 @@ class Map : GameObject
 
 
         // 랜덤 배치 할거면 Y값 로직 정해서 넣기
-        switch (pickNum)
+        switch (1)
         {
             case 1:
                 // 큰 젤리
-                AddItem(fieldLength + 1, jellY, 2, 2, "Big", 'J', ConsoleColor.Red);
+                AddItem(fieldLength + 1, jellY - 1, 2, 2, "Big", 'J', ConsoleColor.Red);
                 break;
 
             default:
