@@ -35,6 +35,7 @@ public class GameManager : GameApp
 
         _scenes.CurrentScene?.Update(deltaTime);
 
+
     }
     protected override void Draw()
     {

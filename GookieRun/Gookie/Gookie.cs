@@ -21,6 +21,9 @@ public class Gookie : GameObject
     private int jumpCount;
 
 
+    public int CurrentPosition => currPos;
+    public int StartPosition => startPos;
+
     public Gookie(Scene scene) : base(scene)
     {
         Name = "Gookie";
