@@ -16,7 +16,7 @@ public class Gookie : GameObject
 
     private float _jumpTimer;
 
-    private int body = 4;
+    public int body { get; private set; } = 4;
     private int height = 3;
     private int jumpCount;
 
