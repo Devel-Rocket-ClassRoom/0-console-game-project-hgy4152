@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 public class Gookie : GameObject
 {
-    private int _direction;
+    public int _direction;
     private int startPos;
     private int currPos;
     private bool isJump;
@@ -29,12 +29,13 @@ public class Gookie : GameObject
     {
         Name = "Gookie";
 
-        startPos = 10;
+        startPos = 14;
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
-        buffer.FillRect(1, currPos, 2, body, '|');
+        // 그릴 위치 보정해야하니 -body
+        buffer.FillRect(1, currPos - body, 2, body, '|');
 
     }
 
@@ -71,8 +72,6 @@ public class Gookie : GameObject
             Fall();
             _jumpTimer = 0;
 
-           
-
         }
 
 
@@ -80,14 +79,12 @@ public class Gookie : GameObject
         if(Input.IsKeyDown(ConsoleKey.DownArrow) && !isJump && !isSlide)
         {
             body = 2;
-            _direction += 1;
             isSlide = true;
         }
 
-        else if(isSlide && Input.IsKeyUp(ConsoleKey.DownArrow))
+        else if(isJump || Input.IsKeyUp(ConsoleKey.DownArrow)) // 점프하거나 손가락 땔 시
         {
             isSlide = false;
-            _direction = 0;
             body = 4;
         }
 
@@ -116,20 +113,28 @@ public class Gookie : GameObject
             jumpCount = 0;
 
             // 낙하 슬라이드 보정
-            if (isSlide)
+            if (isSlide && 10 > currPos)
             {
                 _direction = 2;
             }
         }
-        
-
-        
 
     }
 
-    bool isBound(int LT, int RT, int LB, int RB)
+    public bool isBound(int x, int y, string name)
     {
-        return true;
+        bool isCrash = false;
+
+        isCrash = currPos - y > 0;
+
+        // 천장 장애물
+        if(name == "Hang")
+        {
+            isCrash = body != 2;
+        }
+
+        // 뒷통수에 걸리는 것도 맞게 할려면 x >= 0
+        return x >= 0 && x <= 2 && isCrash ;
     }
 
 }

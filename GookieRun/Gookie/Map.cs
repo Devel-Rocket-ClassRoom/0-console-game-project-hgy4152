@@ -9,7 +9,7 @@ class Map : GameObject
     private const float k_MoveInterval = 0.06f; // 자동으로 움직이는 시간
     
 
-    public List<Item> map = new List<Item>();
+    public List<Item> mapObj = new List<Item>();
 
     private float _moveTimer;
 
@@ -17,9 +17,6 @@ class Map : GameObject
     private int Bottom = 14;
     private int fieldLength = 100;
     private int node = 0;
-    private int jelly = 0;
-
-    private bool isStart = false;
 
 
     public Map(Scene scene) : base(scene)
@@ -38,10 +35,15 @@ class Map : GameObject
         buffer.DrawHLine(0, Top, fieldLength, '=');
         buffer.DrawHLine(0, Bottom, fieldLength, '=');
 
-        foreach (var obj in map)
+        foreach (var obj in mapObj)
         {
             buffer.FillRect(obj.X, obj.Y, obj.Width, obj.Height, obj.C, obj.Color);
 
+            if(obj.destroy)
+            {
+                buffer.FillRect(obj.X, obj.Y, obj.Width, obj.Height, '`', ConsoleColor.Blue);
+                buffer.WriteText(obj.X, obj.Y + obj.Height/2, " +50 ", ConsoleColor.Blue);
+            }
         }
 
     }
@@ -63,44 +65,33 @@ class Map : GameObject
             {
                 CreateObstarcle();
 
-                var lastObs = map[map.Count - 1];
+                var lastObs = mapObj[mapObj.Count - 1];
                 CreateJelly(lastObs.Height, lastObs.Name);
 
 
                 node = 0;
    
             }
-
-            
             else if(node % 5 == 0)
             {
                 CreateJelly();
-  
             }
-
-
         }
-
-
-
-
     }
 
     private void Move()
     {
         // 움직일 때 마다 안에 든 x 좌표 모두 감소
-        for (int i = map.Count - 1; i >= 0; i--)
+        for (int i = mapObj.Count - 1; i >= 0; i--)
         {
-            var item = map[i];
+            var item = mapObj[i];
 
             item.X -= 1;
 
-            map[i] = item;
-
             // 맵 밖으로 넘어간거 제거
-            if (map[i].X + map[i].Width < 0)
+            if (mapObj[i].X + mapObj[i].Width < 0)
             {
-                map.RemoveAt(i);
+                mapObj.RemoveAt(i);
             }
         }
 
@@ -119,24 +110,24 @@ class Map : GameObject
             case 1:
             case 2:
                 // 천장
-                AddItem(fieldLength, Top + 1, 3, 9, "Hang", '*');
+                AddItem(fieldLength, Top + 1, 3, 9, "Hang", "Obstarcle", '*');
                 break;
 
             case 3:
             case 4:
             case 5:
                 // 바닥 장애물 - 1단 점프
-                AddItem(fieldLength, Bottom - 3, 3, 3, "Jump", '*');
+                AddItem(fieldLength, Bottom - 3, 3, 3, "Jump", "Obstarcle", '*');
                 break;
 
             case 6:
             case 7:
                 // 2단 점프
-                AddItem(fieldLength, Bottom - 5, 3, 5, "Double", '*');
+                AddItem(fieldLength, Bottom - 5, 3, 5, "Double", "Obstarcle", '*');
                 break;
 
             default:
-                AddItem(fieldLength, Bottom, 0, 0, "null", '*');
+                AddItem(fieldLength, Bottom, 0, 0, "null", "Obstarcle", '*');
                 break;
 
         }
@@ -156,16 +147,16 @@ class Map : GameObject
 
 
         // 랜덤 배치 할거면 Y값 로직 정해서 넣기
-        switch (1)
+        switch (pickNum)
         {
             case 1:
                 // 큰 젤리
-                AddItem(fieldLength + 1, jellY - 1, 2, 2, "Big", 'J', ConsoleColor.Red);
+                AddItem(fieldLength + 1, jellY - 1, 2, 2, "Big", "Jelly", 'J', ConsoleColor.Red);
                 break;
 
             default:
                 // 일반 젤리 
-                AddItem(fieldLength + 1, jellY, 1, 1, "Normal", 'J', ConsoleColor.Red);
+                AddItem(fieldLength + 1, jellY, 1, 1, "Normal", "Jelly", 'J', ConsoleColor.Red);
                 break;
 
         }
@@ -178,7 +169,7 @@ class Map : GameObject
     
 
 
-    private void AddItem(int x, int y, int width, int height, string name, char c, ConsoleColor color = ConsoleColor.White)
+    private void AddItem(int x, int y, int width, int height, string name, string type, char c, ConsoleColor color = ConsoleColor.White)
     {
 
         Item item = new Item()
@@ -188,12 +179,13 @@ class Map : GameObject
             Width = width,
             Height = height,
             Name = name,
+            Type = type,
             C = c,
             Color = color
         };
 
 
-        map.Add(item);
+        mapObj.Add(item);
 
     }
 
