@@ -5,7 +5,7 @@ namespace Framework.Engine
 {
     public abstract class GameApp
     {
-        private const int k_TargetFrameTime = 33;
+        private const int k_TargetFrameTime = 8;
         private bool _isRunning;
 
         protected ScreenBuffer Buffer { get; private set; } // 그리기

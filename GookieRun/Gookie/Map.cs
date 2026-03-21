@@ -6,8 +6,8 @@ using static System.Reflection.Metadata.BlobBuilder;
 
 class Map : GameObject
 {
-    private const float k_MoveInterval = 0.06f; // 자동으로 움직이는 시간
-    
+    private const float MoveInterval = 0.04f; // 자동으로 움직이는 시간
+    public float Speed{ get; private set;}
 
     public List<Item> mapObj = new List<Item>();
 
@@ -19,12 +19,17 @@ class Map : GameObject
     private int node = 0;
 
 
+    // 나중에 맵 조작해야하는 스킬 같은 것들 구현할 때
+    public bool isFast = false;
+
+
     public Map(Scene scene) : base(scene)
     {
         Name = "Map";
 
         // 시작지점 설정
         node = fieldLength;
+        Speed = MoveInterval;
        
     }
 
@@ -42,7 +47,7 @@ class Map : GameObject
             if(obj.destroy)
             {
                 buffer.FillRect(obj.X, obj.Y, obj.Width, obj.Height, '`', ConsoleColor.Blue);
-                buffer.WriteText(obj.X, obj.Y + obj.Height/2, " +50 ", ConsoleColor.Blue);
+                buffer.WriteText(obj.X, obj.Y + obj.Height/2, "+50", ConsoleColor.Blue);
             }
         }
 
@@ -54,7 +59,7 @@ class Map : GameObject
 
 
         // 자동 이동
-        if (_moveTimer > k_MoveInterval)
+        if (_moveTimer > Speed)
         {
             Move();
 
@@ -163,12 +168,6 @@ class Map : GameObject
 
     }
 
-
-
-
-    
-
-
     private void AddItem(int x, int y, int width, int height, string name, string type, char c, ConsoleColor color = ConsoleColor.White)
     {
 
@@ -190,6 +189,16 @@ class Map : GameObject
     }
 
 
-
+    public void mapReaction(bool isSkill, Skill skill)
+    {
+        if(isSkill)
+        {
+            Speed = skill.speed;
+        }
+        else
+        {
+            Speed = MoveInterval;
+        }
+    }
 
 }

@@ -1,5 +1,4 @@
 ﻿using Framework.Engine;
-using GookieRun.Gookie;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,22 +6,27 @@ using System.Text;
 class PlayScene : Scene
 {
     public event GameAction PlayAgainRequested;
+    
 
     private Map map;
     private Gookie gookie;
-    
 
     private bool isCrash = false;
+    private bool isSkill = false;
     private float immuneTime = 0f;
+    private float playTime = 0f;
 
     private int score = 0;
-    private int scoreLog = 0;
-   
+    private int health = 60;
+
 
     public override void Update(float deltaTime)
     {
         UpdateGameObjects(deltaTime);
-        
+
+        // 스킬 사용
+        isSkill = gookie.isSkill;
+        map.mapReaction(isSkill, gookie.skill);
 
         // 장애물 충돌 후 무적
         if (isCrash)
@@ -44,7 +48,7 @@ class PlayScene : Scene
             if (gookie.isBound(pos.X, pos.Y, pos.Name))
             {
 
-                pos.destroy = skillActive();
+                pos.destroy = isSkill;
 
                 return Judge(pos.Type, pos.Name);
             }
@@ -53,21 +57,23 @@ class PlayScene : Scene
             return false;
         });
 
-
-
+        playTime += deltaTime;
+        // 체력 자동 감소
+        if (playTime > 1)
+        {
+            health -= 1;
+            playTime = 0;
+        }
 
     }
     public override void Draw(ScreenBuffer buffer)
     {
         DrawGameObjects(buffer);
 
-        int playposB = gookie.CurrentPosition;
-        int playposT = gookie.CurrentPosition - gookie.body;
+        buffer.WriteText(1, 0, $"HP:", ConsoleColor.Green);
+        buffer.DrawHLine(5, 0, health, '█', ConsoleColor.Green);
 
-        buffer.WriteText(1, 0, $"Score: {score}", ConsoleColor.Cyan);
-        buffer.WriteText(1, 15, $"Obstarcle: {scoreLog} / {immuneTime}", ConsoleColor.Cyan);
-        buffer.WriteText(1, 18, $"Log - direction: {gookie._direction}", ConsoleColor.Cyan);
-
+        buffer.WriteText(7, 16, $"Score: {score}", ConsoleColor.Cyan);
 
     }
 
@@ -77,8 +83,13 @@ class PlayScene : Scene
         AddGameObject(map);
 
 
+        // 쿠키, 스킬 셋팅 등록
         gookie = new Gookie(this);
         AddGameObject(gookie);
+        AddGameObject(gookie.skill);
+
+
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
 
     }
 
@@ -108,16 +119,23 @@ class PlayScene : Scene
 
         else if(type == "Obstarcle" && !isCrash)
         {
-            scoreLog++;
+
             isCrash = true;
+
+            // 파괴 점수
+            if(isSkill)
+            {
+                score += 100;
+            }
+            else
+            {
+                health -= 5;
+            }
             
         }
 
         return false;
     }
 
-    bool skillActive()
-    {
-        return true;
-    }
+
 }

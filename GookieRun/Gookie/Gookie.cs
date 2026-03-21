@@ -9,6 +9,7 @@ public class Gookie : GameObject
     public int _direction;
     private int startPos;
     private int currPos;
+
     private bool isJump;
     private bool isTop;
     private bool isSlide;
@@ -20,7 +21,9 @@ public class Gookie : GameObject
     private int height = 3;
     private int jumpCount;
 
-    
+
+    public Skill skill;
+    public bool isSkill;
 
     public int CurrentPosition => currPos;
     public int StartPosition => startPos;
@@ -30,6 +33,8 @@ public class Gookie : GameObject
         Name = "Gookie";
 
         startPos = 14;
+
+        skill = new Skill(scene);
     }
 
     public override void Draw(ScreenBuffer buffer)
@@ -37,14 +42,21 @@ public class Gookie : GameObject
         // 그릴 위치 보정해야하니 -body
         buffer.FillRect(1, currPos - body, 2, body, '|');
 
+
     }
 
     public override void Update(float deltaTime)
     {
         
         _jumpTimer += deltaTime;
+
         currPos = startPos + _direction;
 
+
+        // 캐릭터와 스킬 갯수가 많으면 event로 관리해도 될듯
+        isSkill = skill.Dash(deltaTime);
+
+        // Action
         if (Input.IsKeyDown(ConsoleKey.Spacebar) && jumpCount < 2)
         {
             
