@@ -29,7 +29,8 @@ class PlayScene : Scene
     public override void Update(float deltaTime)
     {
 
-        isGameOver = health == 0;
+        isGameOver = health <= 0;
+
         if (isGameOver)
         {
             if (Input.IsKeyDown(ConsoleKey.Enter))
@@ -186,7 +187,7 @@ class PlayScene : Scene
             
         }
 
-        else if(type == "Dead")
+        else if(type == "Dead" && !isSkill)
         {
             isDead = !gookie.isJump;
         }
