@@ -6,13 +6,18 @@ using System.Text;
 class PlayScene : Scene
 {
     public event GameAction PlayAgainRequested;
-    
+
+
+    public event Action<Skill> OnSkill; 
+    public event Action<Skill> OffSkill;
+    public event Action Dead;
 
     private Map map;
     private Gookie gookie;
 
     private bool isCrash = false;
     private bool isSkill = false;
+    private bool isDead = false;
     private float immuneTime = 0f;
     private float playTime = 0f;
 
@@ -24,9 +29,24 @@ class PlayScene : Scene
     {
         UpdateGameObjects(deltaTime);
 
+        if(isDead)
+        {
+            Dead();
+            return;
+        }
         // 스킬 사용
+        // 이벤트로 받아서 map, gookie에 발송 해주는 식으로 바꾸기
+        // map 은 스피드 변환
+        // gookie는 위치 변환 및 히트박스 확대
         isSkill = gookie.isSkill;
-        map.mapReaction(isSkill, gookie.skill);
+        if (isSkill)
+        {
+            OnSkill(gookie.skill);
+        }
+        else
+        {
+            OffSkill(gookie.skill);
+        }
 
         // 장애물 충돌 후 무적
         if (isCrash)
@@ -45,7 +65,7 @@ class PlayScene : Scene
         map.mapObj.RemoveAll(pos =>
         {
 
-            if (gookie.isBound(pos.X, pos.Y, pos.Name))
+            if (gookie.isBound(pos.X, pos.Y, pos.Name, pos.Type))
             {
 
                 pos.destroy = isSkill;
@@ -59,7 +79,7 @@ class PlayScene : Scene
 
         playTime += deltaTime;
         // 체력 자동 감소
-        if (playTime > 1)
+        if (playTime > 1 && !isSkill)
         {
             health -= 1;
             playTime = 0;
@@ -82,14 +102,22 @@ class PlayScene : Scene
         map = new Map(this);
         AddGameObject(map);
 
+        OnSkill += map.mapReactionOn;
+        OffSkill += map.mapReactionOff;
+        Dead += map.Dead;
 
         // 쿠키, 스킬 셋팅 등록
         gookie = new Gookie(this);
+
         AddGameObject(gookie);
         AddGameObject(gookie.skill);
 
+        OnSkill += gookie.OnDash;
+        OffSkill += gookie.OffDash;
+        Dead += gookie.Dead;
+        Dead += gookie.skill.Dead;
 
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.OutputEncoding = Encoding.UTF8;
 
     }
 
@@ -116,6 +144,12 @@ class PlayScene : Scene
             return true;
             
         }
+        else if(type == "Potion")
+        {
+            health += 5;
+
+            return true;
+        }
 
         else if(type == "Obstarcle" && !isCrash)
         {
@@ -134,6 +168,10 @@ class PlayScene : Scene
             
         }
 
+        else if(type == "Dead")
+        {
+            isDead = !gookie.isJump;
+        }
         return false;
     }
 

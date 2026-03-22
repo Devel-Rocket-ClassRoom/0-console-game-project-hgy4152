@@ -9,21 +9,27 @@ public class Gookie : GameObject
     public int _direction;
     private int startPos;
     private int currPos;
+    private int xPos;
+    private int Width;
 
-    private bool isJump;
-    private bool isTop;
-    private bool isSlide;
-
+    public bool isJump {  get; private set; }
+    public bool isTop { get; private set; }
+    public bool isSlide { get; private set; }
+    public bool isSkill { get; private set; }
+    public bool isDead { get; private set; }
+    public bool isFall { get; private set; }
+ 
 
     private float _jumpTimer;
+    private float deadTimer;
 
-    public int body { get; private set; } = 4;
+    public int body { get; private set; } = 3;
     private int height = 3;
     private int jumpCount;
 
 
     public Skill skill;
-    public bool isSkill;
+
 
     public int CurrentPosition => currPos;
     public int StartPosition => startPos;
@@ -33,27 +39,33 @@ public class Gookie : GameObject
         Name = "Gookie";
 
         startPos = 14;
-
+        xPos = 5;
+        Width = 2;
         skill = new Skill(scene);
     }
 
     public override void Draw(ScreenBuffer buffer)
     {
         // 그릴 위치 보정해야하니 -body
-        buffer.FillRect(1, currPos - body, 2, body, '|');
-
+        buffer.FillRect(xPos, currPos - body, Width, body, '|');
 
     }
 
     public override void Update(float deltaTime)
     {
-        
+
         _jumpTimer += deltaTime;
 
         currPos = startPos + _direction;
 
+        if (isFall)
+        {
+            deadTimer += deltaTime;
+            return;
+        }
 
         // 캐릭터와 스킬 갯수가 많으면 event로 관리해도 될듯
+        // 캐릭터가 보유한 스킬표기
         isSkill = skill.Dash(deltaTime);
 
         // Action
@@ -97,7 +109,7 @@ public class Gookie : GameObject
         else if(isJump || Input.IsKeyUp(ConsoleKey.DownArrow)) // 점프하거나 손가락 땔 시
         {
             isSlide = false;
-            body = 4;
+            body = 3;
         }
 
     }
@@ -133,10 +145,11 @@ public class Gookie : GameObject
 
     }
 
-    public bool isBound(int x, int y, string name)
+    public bool isBound(int x, int y, string name, string type)
     {
         bool isCrash = false;
 
+        // 장애물 크기에 따라
         isCrash = currPos - y > 0;
 
         // 천장 장애물
@@ -144,9 +157,39 @@ public class Gookie : GameObject
         {
             isCrash = body != 2;
         }
+        else if(type == "Jelly" || type == "Potion")
+        {
+            // 히트박스
+            isCrash = currPos >= y && currPos - body <= y;
+        }
 
-        // 뒷통수에 걸리는 것도 맞게 할려면 x >= 0
-        return x >= 0 && x <= 2 && isCrash ;
+
+
+        return x >= 3 && x <= xPos && isCrash ;
     }
 
+
+    public void OnDash(Skill skill)
+    {
+        xPos = 9;
+    }
+    public void OffDash(Skill skill)
+    {
+        xPos = 5;
+    }
+
+
+    public void Dead()
+    {
+        isFall = true;
+
+        if (deadTimer > 0.1)
+        {
+            startPos += 2;
+            xPos += 1;
+            deadTimer = 0;
+        }
+
+        isDead = startPos > 16;
+    }
 }

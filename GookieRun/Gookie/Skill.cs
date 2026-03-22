@@ -57,7 +57,7 @@ public class Skill : GameObject
         // 스킬 ui
         buffer.DrawBox(1, 15, 5, 5);
 
-        buffer.WriteText(7, 15, $"{GameTime} / {(CoolTime / 3) :n0}");
+        buffer.WriteText(7, 15, $"{GameTime:n0} / {(CoolTime / 3) :n0}");
 
         // 유니코드 안될수도 있음
         // 순차적으로 차는거 보여줌
@@ -82,5 +82,10 @@ public class Skill : GameObject
 
         }
 
+    }
+
+    public void Dead()
+    {
+        GameTime = 0;
     }
 }

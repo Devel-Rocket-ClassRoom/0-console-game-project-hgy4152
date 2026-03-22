@@ -9,9 +9,10 @@ class Map : GameObject
     private const float MoveInterval = 0.04f; // 자동으로 움직이는 시간
     public float Speed{ get; private set;}
 
-    public List<Item> mapObj = new List<Item>();
+    public List<mapObject> mapObj = new List<mapObject>();
 
     private float _moveTimer;
+    private float _potionTimer;
 
     private int Top = 1;
     private int Bottom = 14;
@@ -44,7 +45,7 @@ class Map : GameObject
         {
             buffer.FillRect(obj.X, obj.Y, obj.Width, obj.Height, obj.C, obj.Color);
 
-            if(obj.destroy)
+            if (obj.destroy && obj.Type != "Dead")
             {
                 buffer.FillRect(obj.X, obj.Y, obj.Width, obj.Height, '`', ConsoleColor.Blue);
                 buffer.WriteText(obj.X, obj.Y + obj.Height/2, "+50", ConsoleColor.Blue);
@@ -56,7 +57,7 @@ class Map : GameObject
     public override void Update(float deltaTime)
     {
         _moveTimer += deltaTime;
-
+        _potionTimer += deltaTime;
 
         // 자동 이동
         if (_moveTimer > Speed)
@@ -68,10 +69,13 @@ class Map : GameObject
 
             if(node >= 20)
             {
+                // 20칸 이동마다 생성
                 CreateObstarcle();
 
+                // 생성한 장애물 라인에 젤리 생성
+                // 높이와 종류 따라 생성위치 조절
                 var lastObs = mapObj[mapObj.Count - 1];
-                CreateJelly(lastObs.Height, lastObs.Name);
+                CreateItem(lastObs.Height, lastObs.Name);
 
 
                 node = 0;
@@ -79,7 +83,8 @@ class Map : GameObject
             }
             else if(node % 5 == 0)
             {
-                CreateJelly();
+                // 5, 10, 15칸에 젤리 생성
+                CreateItem();
             }
         }
     }
@@ -110,39 +115,50 @@ class Map : GameObject
         int pickNum = rnd.Next(1, 11);
 
         // 랜덤 배치 할거면 Y값 로직 정해서 넣기
-        switch (pickNum)
+        switch (8)
         {
             case 1:
             case 2:
                 // 천장
-                AddItem(fieldLength, Top + 1, 3, 9, "Hang", "Obstarcle", '*');
+                AddObject(fieldLength, Top + 1, 3, 10, "Hang", "Obstarcle", '*');
                 break;
 
             case 3:
             case 4:
             case 5:
                 // 바닥 장애물 - 1단 점프
-                AddItem(fieldLength, Bottom - 3, 3, 3, "Jump", "Obstarcle", '*');
+                AddObject(fieldLength, Bottom - 2, 3, 2, "Jump", "Obstarcle", '*');
                 break;
 
             case 6:
             case 7:
                 // 2단 점프
-                AddItem(fieldLength, Bottom - 5, 3, 5, "Double", "Obstarcle", '*');
+                AddObject(fieldLength, Bottom - 4, 3, 4, "Double", "Obstarcle", '*');
+                break;
+
+            case 8:
+                // 낙사
+                AddObject(fieldLength, Bottom - 1, 6, 2, "Fallen", "Dead", ' ');
                 break;
 
             default:
-                AddItem(fieldLength, Bottom, 0, 0, "null", "Obstarcle", '*');
+                AddObject(fieldLength, Bottom, 0, 0, "null", "Obstarcle", '*');
                 break;
 
         }
     }
-    private void CreateJelly(int h = 0, string name = "Hang")
+    private void CreateItem(int h = 0, string name = "Hang")
     {
         Random rnd = new Random();
         int pickNum = rnd.Next(1, 11);
         int jellY = Bottom - 2;
 
+        if(_potionTimer >= 10)
+        {
+            AddObject(fieldLength + 1, jellY - 1, 2, 2, "Health_S", "Potion", 'O', ConsoleColor.Yellow);
+            _potionTimer = 0;
+            return;
+        }
 
         // Y 값 로직
         if( h != 0 && name != "Hang")
@@ -156,22 +172,22 @@ class Map : GameObject
         {
             case 1:
                 // 큰 젤리
-                AddItem(fieldLength + 1, jellY - 1, 2, 2, "Big", "Jelly", 'J', ConsoleColor.Red);
+                AddObject(fieldLength + 1, jellY - 1, 2, 2, "Big", "Jelly", 'J', ConsoleColor.Red);
                 break;
 
             default:
                 // 일반 젤리 
-                AddItem(fieldLength + 1, jellY, 1, 1, "Normal", "Jelly", 'J', ConsoleColor.Red);
+                AddObject(fieldLength + 1, jellY, 1, 1, "Normal", "Jelly", 'J', ConsoleColor.Red);
                 break;
 
         }
 
     }
 
-    private void AddItem(int x, int y, int width, int height, string name, string type, char c, ConsoleColor color = ConsoleColor.White)
+    private void AddObject(int x, int y, int width, int height, string name, string type, char c, ConsoleColor color = ConsoleColor.White)
     {
 
-        Item item = new Item()
+        mapObject item = new mapObject()
         {
             X = x,
             Y = y,
@@ -189,16 +205,17 @@ class Map : GameObject
     }
 
 
-    public void mapReaction(bool isSkill, Skill skill)
+    public void mapReactionOn(Skill skill)
     {
-        if(isSkill)
-        {
-            Speed = skill.speed;
-        }
-        else
-        {
-            Speed = MoveInterval;
-        }
+        Speed = skill.speed;
+    }
+    public void mapReactionOff(Skill skill)
+    {
+        Speed = MoveInterval;
     }
 
+    public void Dead()
+    {
+        _moveTimer = 0;
+    }
 }
