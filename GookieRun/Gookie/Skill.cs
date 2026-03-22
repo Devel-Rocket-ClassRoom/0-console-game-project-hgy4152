@@ -23,7 +23,36 @@ public class Skill : GameObject
         persist = 3;
         speed = 0;
     }
+    public override void Draw(ScreenBuffer buffer)
+    {
+        // 스킬 ui
+        buffer.DrawBox(1, 15, 5, 5);
 
+        // 유니코드 안될수도 있음
+        // 순차적으로 차는거 보여줌
+        for (int i = 0; i < GameTime / (CoolTime / 3) - 1; i++)
+        {
+            if (GameTime / (CoolTime / 3) >= 1)
+                buffer.WriteText(2, 18 - i, "███", ConsoleColor.Green);
+        }
+    }
+
+
+    public override void Update(float deltaTime)
+    {
+
+        if (isCool)
+        {
+            GameTime += deltaTime;
+
+            if (GameTime > CoolTime)
+            {
+                isCool = false;
+            }
+
+        }
+
+    }
     public bool Dash(float deltaTime)
     {
 
@@ -51,39 +80,6 @@ public class Skill : GameObject
         return false;
 
     }
-
-    public override void Draw(ScreenBuffer buffer)
-    {
-        // 스킬 ui
-        buffer.DrawBox(1, 15, 5, 5);
-
-        buffer.WriteText(7, 15, $"{GameTime:n0} / {(CoolTime / 3) :n0}");
-
-        // 유니코드 안될수도 있음
-        // 순차적으로 차는거 보여줌
-        for (int i = 0; i < GameTime / (CoolTime / 3) - 1; i++)
-        {
-            if(GameTime / (CoolTime / 3) >= 1)
-                buffer.WriteText(2, 18 - i, "███", ConsoleColor.Green);
-        }
-    }
-
-    public override void Update(float deltaTime)
-    {
-
-        if (isCool)
-        {
-            GameTime += deltaTime;
-
-            if (GameTime > CoolTime)
-            {
-                isCool = false;
-            }
-
-        }
-
-    }
-
     public void Dead()
     {
         GameTime = 0;

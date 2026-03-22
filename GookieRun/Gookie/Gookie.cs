@@ -114,7 +114,7 @@ public class Gookie : GameObject
 
     }
 
-
+    // 액션
     void Jump()
     {
         _direction -= 1;
@@ -145,6 +145,7 @@ public class Gookie : GameObject
 
     }
 
+    // 충돌 판단
     public bool isBound(int x, int y, string name, string type)
     {
         bool isCrash = false;
@@ -163,12 +164,10 @@ public class Gookie : GameObject
             isCrash = currPos >= y && currPos - body <= y;
         }
 
-
-
         return x >= 3 && x <= xPos && isCrash ;
     }
 
-
+    // 스킬 발동 이벤트 함수
     public void OnDash(Skill skill)
     {
         xPos = 9;
@@ -178,7 +177,7 @@ public class Gookie : GameObject
         xPos = 5;
     }
 
-
+    // 게임 오버 함수
     public void Dead()
     {
         isFall = true;

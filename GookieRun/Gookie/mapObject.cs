@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-public class mapObject
+public class MapObject
 {
     public int X;
     public int Y;

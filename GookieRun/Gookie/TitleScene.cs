@@ -108,7 +108,7 @@ public class TitleScene : Scene
 
         Console.ResetColor();
 
-        buffer.WriteTextCentered(12, "Press Any Key to Start");
+        buffer.WriteTextCentered(12, "Press ENTER to Start");
 
     }
 

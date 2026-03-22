@@ -9,7 +9,7 @@ class Map : GameObject
     private const float MoveInterval = 0.04f; // 자동으로 움직이는 시간
     public float Speed{ get; private set;}
 
-    public List<mapObject> mapObj = new List<mapObject>();
+    public List<MapObject> mapObj = new List<MapObject>();
 
     private float _moveTimer;
     private float _potionTimer;
@@ -89,6 +89,8 @@ class Map : GameObject
         }
     }
 
+
+    // 이동
     private void Move()
     {
         // 움직일 때 마다 안에 든 x 좌표 모두 감소
@@ -109,6 +111,7 @@ class Map : GameObject
 
     }
 
+    // 오브젝트 제작
     private void CreateObstarcle()
     {
         Random rnd = new Random();
@@ -153,12 +156,7 @@ class Map : GameObject
         int pickNum = rnd.Next(1, 11);
         int jellY = Bottom - 2;
 
-        if(_potionTimer >= 10)
-        {
-            AddObject(fieldLength + 1, jellY - 1, 2, 2, "Health_S", "Potion", 'O', ConsoleColor.Yellow);
-            _potionTimer = 0;
-            return;
-        }
+
 
         // Y 값 로직
         if( h != 0 && name != "Hang")
@@ -166,6 +164,12 @@ class Map : GameObject
             jellY = Bottom - 2 - h;
         }
 
+        if (_potionTimer >= 10)
+        {
+            AddObject(fieldLength + 1, jellY, 2, 2, "Health_S", "Potion", 'O', ConsoleColor.Yellow);
+            _potionTimer = 0;
+            return;
+        }
 
         // 랜덤 배치 할거면 Y값 로직 정해서 넣기
         switch (pickNum)
@@ -184,10 +188,11 @@ class Map : GameObject
 
     }
 
+    // 오브젝트 추가
     private void AddObject(int x, int y, int width, int height, string name, string type, char c, ConsoleColor color = ConsoleColor.White)
     {
 
-        mapObject item = new mapObject()
+        MapObject item = new MapObject()
         {
             X = x,
             Y = y,
@@ -204,7 +209,7 @@ class Map : GameObject
 
     }
 
-
+    // 스킬 발동 시 맵 반응
     public void mapReactionOn(Skill skill)
     {
         Speed = skill.speed;
@@ -213,7 +218,7 @@ class Map : GameObject
     {
         Speed = MoveInterval;
     }
-
+    // 게임 종료 시
     public void Dead()
     {
         _moveTimer = 0;
