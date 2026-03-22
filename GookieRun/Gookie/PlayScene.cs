@@ -18,6 +18,7 @@ class PlayScene : Scene
     private bool isCrash = false;
     private bool isSkill = false;
     private bool isDead = false;
+    private bool isGameOver = false;
     private float immuneTime = 0f;
     private float playTime = 0f;
 
@@ -27,17 +28,27 @@ class PlayScene : Scene
 
     public override void Update(float deltaTime)
     {
-        UpdateGameObjects(deltaTime);
 
-        if(isDead)
+        isGameOver = health == 0;
+        if (isGameOver)
         {
-            Dead();
+            if (Input.IsKeyDown(ConsoleKey.Enter))
+            {
+                PlayAgainRequested?.Invoke();
+            }
             return;
         }
+
+        UpdateGameObjects(deltaTime);
+
+        if (isDead)
+        {
+            Dead();
+            isGameOver = gookie.CurrentPosition > 20;
+            return;
+        }
+
         // 스킬 사용
-        // 이벤트로 받아서 map, gookie에 발송 해주는 식으로 바꾸기
-        // map 은 스피드 변환
-        // gookie는 위치 변환 및 히트박스 확대
         isSkill = gookie.isSkill;
         if (isSkill)
         {
@@ -77,6 +88,7 @@ class PlayScene : Scene
             return false;
         });
 
+
         playTime += deltaTime;
         // 체력 자동 감소
         if (playTime > 1 && !isSkill)
@@ -95,6 +107,12 @@ class PlayScene : Scene
 
         buffer.WriteText(7, 16, $"Score: {score}", ConsoleColor.Cyan);
 
+        if(isGameOver)
+        {
+            buffer.DrawBox(27, 5, 18, 5,ConsoleColor.Magenta);
+            buffer.WriteText(31, 7, $"Game Over", ConsoleColor.Magenta);
+
+        }
     }
 
     public override void Load()

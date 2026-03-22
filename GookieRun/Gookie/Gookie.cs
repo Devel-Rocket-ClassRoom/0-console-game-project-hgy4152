@@ -16,8 +16,8 @@ public class Gookie : GameObject
     public bool isTop { get; private set; }
     public bool isSlide { get; private set; }
     public bool isSkill { get; private set; }
-    public bool isDead { get; private set; }
-    public bool isFall { get; private set; }
+    public bool isDead { get; set; }
+    public bool isFall { get; set; }
  
 
     private float _jumpTimer;
@@ -183,7 +183,7 @@ public class Gookie : GameObject
     {
         isFall = true;
 
-        if (deadTimer > 0.1)
+        if (deadTimer > 0.2)
         {
             startPos += 2;
             xPos += 1;

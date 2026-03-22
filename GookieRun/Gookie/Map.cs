@@ -115,7 +115,7 @@ class Map : GameObject
         int pickNum = rnd.Next(1, 11);
 
         // 랜덤 배치 할거면 Y값 로직 정해서 넣기
-        switch (8)
+        switch (pickNum)
         {
             case 1:
             case 2:
@@ -138,7 +138,7 @@ class Map : GameObject
 
             case 8:
                 // 낙사
-                AddObject(fieldLength, Bottom - 1, 6, 2, "Fallen", "Dead", ' ');
+                AddObject(fieldLength, Bottom - 1, 8, 2, "Fallen", "Dead", ' ');
                 break;
 
             default:
@@ -172,7 +172,7 @@ class Map : GameObject
         {
             case 1:
                 // 큰 젤리
-                AddObject(fieldLength + 1, jellY - 1, 2, 2, "Big", "Jelly", 'J', ConsoleColor.Red);
+                AddObject(fieldLength + 1, jellY, 2, 2, "Big", "Jelly", 'J', ConsoleColor.Red);
                 break;
 
             default:
